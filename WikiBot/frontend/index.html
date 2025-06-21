@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wikipedia RAG Chatbot</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+     background: #FFF5E1; 
+      no-repeat center center fixed;
+      no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+.chat-container {
+  width: 420px;
+  height: 90vh;
+  background: url('background.jpg') no-repeat center center;
+  background-size: cover;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: jumpIn 0.9s ease-out;
+}
+
+     
+    .header {
+      background: #f4c2c2; 
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.2rem;
+      
+    }
+
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: transparent;
+     
+
+    }
+
+    .message {
+      padding: 12px 16px;
+      border-radius: 18px;
+      max-width: 75%;
+      line-height: 1.5;
+      word-wrap: break-word;
+     background: rgba(255, 255, 255, 0.7); /* transparent white */
+     color: #000;
+     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      border: 2px solid #aaa;
+    }
+
+    .user {
+      background: #FFD1DC;
+      align-self: flex-end;
+      border-bottom-right-radius: 0;
+      border: 2px solid #aaa;
+    }
+
+    .bot {
+      background: #FFFFFF;
+      align-self: flex-start;
+      border-bottom-left-radius: 0;
+      border: 2px solid #aaa;
+    }
+
+    .input-area {
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: transparent;
+      backdrop-filter: blur(2px);
+    }
+
+    .input-area input {
+     padding: 10px;
+     border-radius: 10px;
+     border: none;
+     background: rgba(255, 255, 255, 0.6);
+     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+     font-size: 1rem;
+     color: #333;
+}
+
+    .input-area button {
+     padding: 10px;
+     border: none;
+     border-radius: 10px;
+     background-color: rgba(244, 194, 194, 0.85);
+     color: white;
+     font-weight: bold;
+     cursor: pointer;
+     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+     font-size: 1rem;
+}
+
+    .input-area button:hover {
+      background-color: #91A3B0;
+    }
+    @keyframes jumpIn {
+  0% {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(-20px);
+    opacity: 1;
+  }
+  80% {
+    transform: translateY(10px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+
+}
+
+@keyframes bubbleIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message {
+  animation: bubbleIn 0.3s ease forwards;
+}
+
+.user {
+  animation-duration: 0.3s;
+}
+
+.bot {
+  animation-duration: 0.5s;
+}
+.typing {
+  display: inline-flex;
+  gap: 5px;
+  margin-left: 10px;
+  align-items: flex-end;
+  height: 18px; /* set a fixed height to align dots */
+}
+
+.typing > span {
+  width: 6px;
+  height: 6px;
+  background-color: #999;
+  border-radius: 50%;
+  animation: wave 1.2s infinite ease-in-out;
+}
+
+.typing > span:nth-child(1) {
+  animation-delay: 0s;
+}
+.typing > span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.typing > span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes wave {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.6;
+  }
+  30% {
+    transform: translateY(-8px);
+    opacity: 1;
+  }
+}
+
+.send-button {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background-color: #f4c2c2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  margin-left: auto;
+}
+
+.send-button:hover {
+  background-color: #91A3B0;
+}
+
+.send-button svg {
+  width: 20px;
+  height: 20px;
+  fill: white;
+}
+
+.question-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.question-row input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  font-size: 1rem;
+  color: #333;
+}
+
+
+
+  </style>
+</head>
+<body>
+
+<div class="chat-container">
+  <div class="header"> 🗨️ WikiBot 💬</div>
+  <div class="messages" id="messages"></div>
+
+  <div class="input-area">
+    <input type="text" id="topicInput" placeholder="Set a topic <3">
+    <button onclick="setTopic()">Set Topic</button>
+
+    <div class="question-row">
+  <input type="text" id="questionInput" placeholder="Ask a question <3">
+  <button class="send-button" onclick="askQuestion()">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="#fff" viewBox="0 0 24 24">
+      <path d="M2 21l21-9L2 3v7l15 2-15 2z"/>
+    </svg>
+  </button>
+</div>
+
+</div>
+
+<script>
+  let currentTopic = "";
+  let alertedNoTopic = false;    // Flag for no topic alert
+  let alertedNoQuestion = false; // Flag for no question alert
+
+  function addMessage(text, sender) {
+    const messageBox = document.getElementById("messages");
+    const message = document.createElement("div");
+    message.className = `message ${sender}`;
+    message.innerText = text;
+    messageBox.appendChild(message);
+    messageBox.scrollTop = messageBox.scrollHeight;
+  }
+
+  async function setTopic() {
+    const topic = document.getElementById("topicInput").value.trim();
+    if (!topic) {
+      alert("Please enter a topic.");
+      return;
+    }
+
+    currentTopic = topic;
+    alertedNoTopic = false;  // reset alert flag since topic is set
+
+    addMessage("Loading Wikipedia for: " + topic + "...", "bot");
+
+    const res = await fetch("http://127.0.0.1:8000/change_topic", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ topic })
+    });
+
+    const data = await res.json();
+
+    addMessage(`Topic is now set to: ${topic}`, "bot");
+    if (data.message && data.message.toLowerCase().includes("error")) {
+      alert("Error setting topic. Try again.");
+    }
+  }
+
+async function askQuestion() {
+  const question = document.getElementById("questionInput").value.trim();
+
+  if (!currentTopic) {
+    if (!alertedNoTopic) {
+      alert("Please set a topic first.");
+      alertedNoTopic = true;
+    }
+    return;
+  }
+
+  if (!question) {
+    if (!alertedNoQuestion) {
+      alert("Please enter a question.");
+      alertedNoQuestion = true;
+    }
+    return;
+  }
+
+  alertedNoQuestion = false;
+  alertedNoTopic = false;
+
+  addMessage(question, "user");
+
+  // Add a typing indicator
+  const messageBox = document.getElementById("messages");
+  const typingIndicator = document.createElement("div");
+  typingIndicator.className = "message bot typing";
+  typingIndicator.innerHTML = `<span></span><span></span><span></span>`;
+  messageBox.appendChild(typingIndicator);
+  messageBox.scrollTop = messageBox.scrollHeight;
+
+  try {
+    const res = await fetch("http://127.0.0.1:8000/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ topic: currentTopic, question }),
+    });
+
+    const data = await res.json();
+
+    // Remove typing indicator
+    messageBox.removeChild(typingIndicator);
+
+    addMessage(data.answer || "No answer available.", "bot");
+  } catch (error) {
+    // Remove typing indicator on error as well
+    messageBox.removeChild(typingIndicator);
+    addMessage("Sorry, something went wrong.", "bot");
+  }
+
+  document.getElementById("questionInput").value = "";
+}
+
+</script>
+
+</body>
+</html>  
