@@ -8,8 +8,7 @@ from langchain_community.vectorstores import FAISS
 from langchain.chains import RetrievalQA
 from langchain_google_genai import ChatGoogleGenerativeAI
 import os
-import asyncio
-from dotenv import load_dotenv 
+import asyncio 
 from fastapi.responses import StreamingResponse
 import json
 
@@ -20,7 +19,6 @@ from langchain.globals import set_debug
 set_debug(True)
 
 # Set your Google API key here
-load_dotenv()
 os.environ["GOOGLE_API_KEY"] = "GOOGLE_API_KEY" #Put your API KEY HERE
 
 app = FastAPI()
