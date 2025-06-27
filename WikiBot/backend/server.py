@@ -11,7 +11,7 @@ import os
 import asyncio 
 from fastapi.responses import StreamingResponse
 import json
-
+from dotenv import load_dotenv
 
 
 from langchain.globals import set_debug
@@ -19,7 +19,9 @@ from langchain.globals import set_debug
 set_debug(True)
 
 # Set your Google API key here
-os.environ["GOOGLE_API_KEY"] = "GOOGLE_API_KEY" #Put your API KEY HERE
+load_dotenv()
+api_key = os.getenv("Google_API_KEY")
+ #Put your API KEY HERE
 
 app = FastAPI()
 
